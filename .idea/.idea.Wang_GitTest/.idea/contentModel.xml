@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\0606\.Rider2018.1\system\resharper-host\local\Transient\ReSharperHost\v12\SolutionCaches\_Wang_GitTest.-399056986.00" t="ExcludeRecursive" />
+    <e p="D:\work\FaceBookSDKDemo\Wang_GitTest" t="IncludeRecursive">
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Scripts" t="Include">
+          <e p="GameEventer.cs" t="Include" />
+          <e p="GameManager.cs" t="Include" />
+          <e p="GameMap.cs" t="Include" />
+          <e p="MainUIManager.cs" t="Include" />
+          <e p="MapCell.cs" t="Include" />
+          <e p="MapItem.cs" t="Include" />
+          <e p="PlayerAreaCtl.cs" t="Include" />
+          <e p="Reg.cs" t="Include" />
+          <e p="Utils.cs" t="Include" />
+        </e>
+      </e>
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
+      <e p="Wang_GitTest.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
