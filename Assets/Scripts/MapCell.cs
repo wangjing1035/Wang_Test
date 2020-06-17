@@ -5,7 +5,8 @@ using UnityEngine;
 public class MapCell : MonoBehaviour
 {
     private CellState curState = CellState.Empty;
-    private int pos = 0;
+    protected int posX = 0;
+    protected int posY = 0;
 
     public void clear()
     {
@@ -17,23 +18,24 @@ public class MapCell : MonoBehaviour
         curState = CellState.Full;
     }
 
-    public virtual void Init(int pos)
+    public virtual void Init(int posX, int PosY)
     {
         clear();
-        this.pos = pos;
-
-        SetPosition(pos);
+        this.posX = posX;
+        this.posY = PosY;
+        SetPosition();
     }
 
-    protected void SetPosition(int pos)
+    protected void SetPosition()
     {
-        int row = pos / 4;
-        int col = pos % 4;
+        transform.localPosition = GetPos();
+    }
 
-        float posY = row - (Reg.MapRow / 2) * Reg.MapItemWidh;
-        float posX = col - (Reg.mapCol / 2) * Reg.MapItemWidh;
-
-        transform.localPosition = new Vector2(posX, posY);
+    protected Vector2 GetPos()
+    {
+        float posX = (this.posX - Reg.mapCol / 2) * Reg.MapItemWidh;
+        float posY = (this.posY - Reg.MapRow / 2) * Reg.MapItemWidh;
+        return new Vector2(posX, posY);
     }
 }
 

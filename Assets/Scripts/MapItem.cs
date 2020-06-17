@@ -1,17 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapItem : MapCell
 {
-    private int score = 0;
-    private int pos = 0;
-    public void Init( int pos ,int score = 0)
+    [SerializeField] private Text scoreText;
+    private int age;
+    public int Score
     {
-        this.score = score;
-        this.pos = pos;
-        
-        SetPosition(pos);
+        get { return age;}
+        set
+        {
+            age = value;
+            scoreText.text = age.ToString();
+        }
+    }
+
+    public void Init(int posX, int posY, int score = 0)
+    {
+        base.Init(posX, posY);
+        Score = score;
+        SetPosition();
+    }
+
+    public void MoveToPos(int posX,int posY)
+    {
+        this.posX = posX;
+        this.posY = posY;
+        transform.DOLocalMove(GetPos(),0.2f);
     }
 }
-

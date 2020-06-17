@@ -22,7 +22,8 @@ public class PlayerAreaCtl : MonoBehaviour,IPointerDownHandler,IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        endPos = Input.acceleration;
+        endPos = Input.mousePosition;
+        CalSliderDir(startPos, endPos);
     }
 
     private void CalSliderDir(Vector2 startPos, Vector2 endPos)

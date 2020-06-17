@@ -10,10 +10,9 @@ public class GameMap : MonoBehaviour
 
     private int col = 4, row = 4;
 
-    private int[,] map = new int[4, 4];
 
-    private List<MapCell> listMapCell = new List<MapCell>();
-    private List<MapItem> listMapItem = new List<MapItem>();
+    private MapCell[,] listMapCell = new MapCell[Reg.mapCol, Reg.MapRow];
+    private MapItem[,] listMapItem = new MapItem[Reg.mapCol, Reg.MapRow];
 
     private int allGridNum = 0;
 
@@ -32,65 +31,67 @@ public class GameMap : MonoBehaviour
         col = Reg.mapCol;
         row = Reg.MapRow;
         allGridNum = col * row;
+
         for (int i = 0; i < col; i++)
         {
             for (int j = 0; j < row; j++)
             {
-                int index = i * col + j;
-                if (index < listMapCell.Count )
+                if (listMapCell[i, j] != null)
                 {
-                    listMapCell[index].Init(index);
+                    listMapCell[i, j].Init(i, j);
                 }
                 else
                 {
                     MapCell mapcel = Instantiate(mapcellPre, transform);
-                    mapcel.Init(index);
-                    listMapCell.Add(mapcel);
+                    mapcel.Init(i, j);
+                    listMapCell[i, j] = mapcel;
                 }
             }
         }
 
-        InitMapItem();
-    }
-
-    public void InitMapItem()
-    {
-        int pos1 = Random.Range(0, allGridNum);
-        int pos2 = Random.Range(0, allGridNum);
-        while (pos1 == pos2)
+        for (int i = 0; i < col; i++)
         {
-            pos2 = Random.Range(0, allGridNum);
-        }
-
-        AddNewMapItem(pos1);
-        AddNewMapItem(pos2);
-    }
-
-    public void AddNewMapItem(int pos)
-    {
-        MapItem item = null;
-        if (pos < allGridNum)
-        {
-            foreach (var value in listMapItem)
+            for (int j = 0; j < row; j++)
             {
-                if (! value.gameObject.activeSelf)
+                if (listMapItem[i, j] != null)
                 {
-                    item = value;
-                    break;
+                    listMapItem[i, j].Init(i, j,0);
                 }
+                else
+                {
+                    MapItem mapitem = Instantiate(mapItemPre, transform);
+                    mapitem.Init(i, j,0);
+                    listMapItem[i, j] = mapitem;
+                }
+                listMapItem[i, j].gameObject.SetActive(false);
+            }
+        }
+
+        
+        //初始化地图上面两个item
+        for (int i = 0; i < Reg.InitItemNum; i++)
+        {
+            int pos1 = Random.Range(0, Reg.mapCol);
+            int pos2 = Random.Range(0, Reg.MapRow);
+
+        
+            int score = 2;
+            if ( Random.Range(0, 100)> 60)
+            {
+                score = 4;
+            }
+                
+            while (listMapItem[pos1, pos2] != null && listMapItem[pos1, pos2].gameObject.activeSelf)
+            {
+                pos1 = Random.Range(0, Reg.mapCol);
+                pos2 = Random.Range(0, Reg.MapRow);
             }
 
-            if (item == null)
-            {
-                item = Instantiate(mapItemPre, transform);
-                listMapItem.Add(item);
-            }
-           
-            item.Init(pos);
-            listMapCell[pos].ChangeState();
+            listMapItem[pos1,pos2].Init(pos1,pos2,score);
+            listMapItem[pos1,pos2].gameObject.SetActive(true);
         }
     }
-    
+
     public void Move(MoveDir dir)
     {
         switch (dir)
@@ -114,17 +115,102 @@ public class GameMap : MonoBehaviour
 
     public void MoveLeft()
     {
+        Debug.LogError("MoveLeft");
     }
 
     public void MoveRight()
     {
+        Debug.LogError("MoveRight");
     }
 
     public void MoveUp()
     {
+        Debug.LogError("MoveUp");
     }
 
+    private List<MapItem> comBineItemList = new List<MapItem>();
+    private List<MapItem> completeCombine = new List<MapItem>();
     public void MoveDown()
     {
+        Debug.LogError("MoveDown");
+        for (int i = 0; i < Reg.MapRow; i++)
+        {
+            comBineItemList.Clear();
+            for (int j = Reg.mapCol -1 ; j >= 0; j--)
+            {
+                if (GetCurPosState(i,j))
+                {
+                     comBineItemList.Add(listMapItem[i,j]);           
+                }
+            }
+
+            completeCombine.Clear();
+        
+            if (comBineItemList.Count > 2)
+            {
+                completeCombine = CalCombileList(comBineItemList);
+            }
+            else
+            {
+                completeCombine = comBineItemList;
+            }
+            int m = 0;
+            for (int j = Reg.mapCol -1 ; j >= 0; j--)
+            {
+                
+                if ( m < completeCombine.Count )
+                {
+                    listMapItem[j, i] = completeCombine[m];
+                    listMapItem[j, i].gameObject.SetActive(true);
+                    listMapCell[j,i].ChangeState();
+                    m++;
+                }
+                else
+                {
+                    listMapItem[j, i].gameObject.SetActive(false);
+                    listMapCell[j,i].clear();
+                }
+
+                listMapItem[j, i].MoveToPos(i, j);
+
+            }
+        }
     }
+
+    private List<MapItem> comBineCompleteList = new List<MapItem>();
+    private List<MapItem> CalCombileList(List<MapItem> mapitemList)
+    {
+        comBineCompleteList.Clear();
+        MapItem item = mapitemList[0];
+        if (mapitemList.Count > 2)
+        {
+            for (int i = 1; i < mapitemList.Count; i++)
+            {
+                if (mapitemList[i].Score == item.Score)
+                {
+                    mapitemList[i].Score *= 2; 
+                    comBineCompleteList.Add(mapitemList[i]);
+                    item = mapitemList[i];
+                }
+                else
+                {
+                    comBineCompleteList.Add(item);
+                    item =  mapitemList[i];
+                }
+            }
+        }
+
+        return comBineCompleteList;
+    }
+
+    private bool GetCurPosState(int posX, int posY)
+    {
+        if (listMapItem[posX,posY] != null && listMapItem[posX,posY].gameObject.activeSelf)
+        {
+            return true;
+        }
+
+        return false;
+    }
+        
 }
